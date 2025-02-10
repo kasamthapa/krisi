@@ -181,6 +181,15 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+      <img
+        className="dark:invert"
+        src="/next.svg"
+        alt="Next.js logo"
+        width={0}
+        height={0}
+        sizes="100vw"
+        style={{ width: '100%', height: 'auto' }}
+      />
     </DashboardLayout>
   );
 } 
