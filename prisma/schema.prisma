@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(FARMER)
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  products Product[]  @relation("UserProducts")
+  orders   Order[]    @relation("UserOrders")
+  reviews  Review[]   @relation("UserReviews")
+}
+
+model Product {
+  id          String    @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  quantity    Int
+  status      Status    @default(PENDING)
+  expiryDate  DateTime?
+  isUrgent    Boolean   @default(false)
+  forDonation Boolean   @default(false)
+  imageUrl    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  seller      User      @relation("UserProducts", fields: [sellerId], references: [id])
+  sellerId    String
+  orders      Order[]   @relation("ProductOrders")
+}
+
+model Order {
+  id        String   @id @default(uuid())
+  quantity  Int
+  status    String   @default("PENDING")
+  total     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  buyer     User     @relation("UserOrders", fields: [buyerId], references: [id])
+  buyerId   String
+  product   Product  @relation("ProductOrders", fields: [productId], references: [id])
+  productId String
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  
+  // Relationships
+  user      User     @relation("UserReviews", fields: [userId], references: [id])
+  userId    String
+}
+
+enum Role {
+  FARMER
+  BUSINESS
+  ADMIN
+  PARTNER
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
+} 
